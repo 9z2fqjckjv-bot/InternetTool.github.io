@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="インターネット計測・診断ツール - 通信速度、デバイス情報、セキュリティ分析、オフライン対応">
+  <meta name="theme-color" content="#1565c0">
+  <title>InternetTool - インターネット計測ツール</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>🌐 InternetTool</h1>
+    <div class="status-bar">
+      <span id="online-status" class="status-badge">確認中...</span>
+      <span id="connection-type" class="status-badge">--</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="メインナビゲーション">
+  <button class="tab active" data-tab="dashboard"    role="tab" aria-selected="true">📊 ダッシュボード</button>
+  <button class="tab"        data-tab="speedtest"    role="tab">⚡ 速度テスト</button>
+  <button class="tab"        data-tab="network"      role="tab">🌐 ネットワーク</button>
+  <button class="tab"        data-tab="device"       role="tab">💻 デバイス</button>
+  <button class="tab"        data-tab="security"     role="tab">🔒 セキュリティ</button>
+  <button class="tab"        data-tab="sites"        role="tab">📡 サイト評価</button>
+  <button class="tab"        data-tab="diagnostics"  role="tab">🔧 診断・改善</button>
+</nav>
+
+<main>
+
+  <!-- ========== DASHBOARD ========== -->
+  <section id="tab-dashboard" class="tab-content active" data-title="ダッシュボード">
+    <div class="section-header">
+      <h2>ダッシュボード</h2>
+      <button class="btn btn-primary" id="refresh-all">🔄 全て更新</button>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">ダウンロード速度</div>
+        <div class="card-value" id="dash-speed-val">--</div>
+        <div class="card-sub">Mbps</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏓</div>
+        <div class="card-title">遅延 (Ping)</div>
+        <div class="card-value" id="dash-ping-val">--</div>
+        <div class="card-sub">ms</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔢</div>
+        <div class="card-title">グローバルIP</div>
+        <div class="card-value small" id="dash-ip-val">--</div>
+        <div class="card-sub">IPアドレス</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏢</div>
+        <div class="card-title">プロバイダ</div>
+        <div class="card-value small" id="dash-isp-val">--</div>
+        <div class="card-sub">ISP</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📶</div>
+        <div class="card-title">回線種別</div>
+        <div class="card-value small" id="dash-signal-val">--</div>
+        <div class="card-sub">接続タイプ</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <div class="card-title">セキュリティ</div>
+        <div class="card-value small" id="dash-security-val">--</div>
+        <div class="card-sub">リスク評価</div>
+      </div>
+    </div>
+
+    <div class="export-bar">
+      <h3>エクスポート</h3>
+      <p class="export-note">計測データをファイルとして保存・共有できます</p>
+      <button class="btn btn-success" id="export-json">📁 JSONエクスポート</button>
+      <button class="btn btn-success" id="export-pdf">📄 PDFダウンロード</button>
+    </div>
+  </section>
+
+  <!-- ========== SPEED TEST ========== -->
+  <section id="tab-speedtest" class="tab-content" data-title="速度テスト">
+    <div class="section-header">
+      <h2>速度テスト</h2>
+      <button class="btn btn-primary" id="start-speedtest">▶ テスト開始</button>
+    </div>
+
+    <div class="speed-results">
+      <div class="speed-card">
+        <div class="speed-icon">⬇️</div>
+        <div class="speed-label">ダウンロード</div>
+        <div class="speed-val" id="dl-speed">--</div>
+        <div class="speed-unit">Mbps</div>
+        <div class="speed-bar"><div class="speed-bar-fill" id="dl-bar"></div></div>
+      </div>
+      <div class="speed-card">
+        <div class="speed-icon">⬆️</div>
+        <div class="speed-label">アップロード</div>
+        <div class="speed-val" id="ul-speed">--</div>
+        <div class="speed-unit">Mbps</div>
+        <div class="speed-bar"><div class="speed-bar-fill" id="ul-bar"></div></div>
+      </div>
+      <div class="speed-card">
+        <div class="speed-icon">🏓</div>
+        <div class="speed-label">Ping</div>
+        <div class="speed-val" id="ping-val">--</div>
+        <div class="speed-unit">ms</div>
+        <div class="speed-bar"><div class="speed-bar-fill" id="ping-bar"></div></div>
+      </div>
+      <div class="speed-card">
+        <div class="speed-icon">📊</div>
+        <div class="speed-label">Jitter</div>
+        <div class="speed-val" id="jitter-val">--</div>
+        <div class="speed-unit">ms</div>
+        <div class="speed-bar"><div class="speed-bar-fill" id="jitter-bar"></div></div>
+      </div>
+    </div>
+
+    <div id="speed-progress" class="speed-progress" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="speed-progress-fill"></div></div>
+      <div class="progress-label" id="speed-progress-label">準備中...</div>
+    </div>
+
+    <div class="speed-assessment" id="speed-assessment"></div>
+
+    <div class="speed-history">
+      <h3>📋 テスト履歴</h3>
+      <div id="speed-history-list" class="history-list"><p class="muted">まだ履歴がありません</p></div>
+    </div>
+  </section>
+
+  <!-- ========== NETWORK ========== -->
+  <section id="tab-network" class="tab-content" data-title="ネットワーク情報">
+    <div class="section-header">
+      <h2>ネットワーク情報</h2>
+      <button class="btn btn-primary" id="refresh-network">🔄 更新</button>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>接続情報</h3>
+        <div class="info-row"><span class="info-label">グローバルIPアドレス</span><span class="info-val" id="net-global-ip">取得中...</span></div>
+        <div class="info-row"><span class="info-label">ローカルIPアドレス</span><span class="info-val" id="net-local-ip">取得中...</span></div>
+        <div class="info-row"><span class="info-label">IPv6アドレス</span><span class="info-val" id="net-ipv6">取得中...</span></div>
+        <div class="info-row"><span class="info-label">プロバイダ (ISP)</span><span class="info-val" id="net-isp">取得中...</span></div>
+        <div class="info-row"><span class="info-label">ASN</span><span class="info-val" id="net-asn">--</span></div>
+        <div class="info-row"><span class="info-label">場所</span><span class="info-val" id="net-location">--</span></div>
+      </div>
+
+      <div class="info-card">
+        <h3>回線・電波情報</h3>
+        <div class="info-row"><span class="info-label">接続タイプ</span><span class="info-val" id="net-type">--</span></div>
+        <div class="info-row"><span class="info-label">有効接続タイプ</span><span class="info-val" id="net-effective-type">--</span></div>
+        <div class="info-row"><span class="info-label">推定帯域幅</span><span class="info-val" id="net-downlink">--</span></div>
+        <div class="info-row"><span class="info-label">RTT (遅延)</span><span class="info-val" id="net-rtt">--</span></div>
+        <div class="info-row"><span class="info-label">データセーバー</span><span class="info-val" id="net-datasaver">--</span></div>
+        <div class="info-row"><span class="info-label">SSID</span><span class="info-val info-limited" title="ブラウザAPIでは取得不可">ブラウザからは取得不可 ⚠️</span></div>
+        <div class="info-row"><span class="info-label">Wi-Fiパスワード</span><span class="info-val info-limited" title="セキュリティ上取得不可">セキュリティ上取得不可 🔒</span></div>
+        <div class="info-row"><span class="info-label">MACアドレス</span><span class="info-val info-limited" title="プライバシー保護のため取得不可">プライバシー保護のため取得不可 🔒</span></div>
+      </div>
+
+      <div class="info-card">
+        <h3>プロトコル・DNS</h3>
+        <div class="info-row"><span class="info-label">プロトコル</span><span class="info-val" id="net-protocol">--</span></div>
+        <div class="info-row"><span class="info-label">HTTP/2対応</span><span class="info-val" id="net-http2">--</span></div>
+        <div class="info-row"><span class="info-label">DNS解決時間</span><span class="info-val" id="net-dns">--</span></div>
+        <div class="info-row"><span class="info-label">接続確立時間</span><span class="info-val" id="net-connect-time">--</span></div>
+        <div class="info-row"><span class="info-label">TTFB</span><span class="info-val" id="net-ttfb">--</span></div>
+      </div>
+
+      <div class="info-card">
+        <h3>ルーター情報</h3>
+        <div class="info-row"><span class="info-label">デフォルトゲートウェイ</span><span class="info-val" id="net-gateway">取得中...</span></div>
+        <div class="info-row"><span class="info-label">ルーター情報</span><span class="info-val info-limited" title="ブラウザAPIでは詳細取得不可">詳細はブラウザからは取得不可 ⚠️</span></div>
+        <div class="info-row"><span class="info-label">VPN有無</span><span class="info-val" id="net-vpn-status">確認中...</span></div>
+        <div class="info-row"><span class="info-label">モバイル回線</span><span class="info-val" id="net-mobile">--</span></div>
+        <div class="info-row"><span class="info-label">ホスティング/DC</span><span class="info-val" id="net-hosting">--</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DEVICE ========== -->
+  <section id="tab-device" class="tab-content" data-title="デバイス情報">
+    <div class="section-header">
+      <h2>デバイス情報</h2>
+      <button class="btn btn-primary" id="refresh-device">🔄 更新</button>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>基本情報</h3>
+        <div class="info-row"><span class="info-label">OS</span><span class="info-val" id="dev-os">--</span></div>
+        <div class="info-row"><span class="info-label">ブラウザ</span><span class="info-val" id="dev-browser">--</span></div>
+        <div class="info-row"><span class="info-label">デバイスタイプ</span><span class="info-val" id="dev-type">--</span></div>
+        <div class="info-row"><span class="info-label">言語</span><span class="info-val" id="dev-lang">--</span></div>
+        <div class="info-row"><span class="info-label">タイムゾーン</span><span class="info-val" id="dev-timezone">--</span></div>
+        <div class="info-row"><span class="info-label">User Agent</span><span class="info-val small" id="dev-ua">--</span></div>
+      </div>
+
+      <div class="info-card">
+        <h3>ハードウェア</h3>
+        <div class="info-row"><span class="info-label">CPUコア数</span><span class="info-val" id="dev-cpu">--</span></div>
+        <div class="info-row"><span class="info-label">デバイスメモリ</span><span class="info-val" id="dev-memory">--</span></div>
+        <div class="info-row"><span class="info-label">画面解像度</span><span class="info-val" id="dev-screen">--</span></div>
+        <div class="info-row"><span class="info-label">ピクセル比 (DPR)</span><span class="info-val" id="dev-dpr">--</span></div>
+        <div class="info-row"><span class="info-label">タッチスクリーン</span><span class="info-val" id="dev-touch">--</span></div>
+        <div class="info-row"><span class="info-label">MACアドレス</span><span class="info-val info-limited">プライバシー保護のため取得不可 🔒</span></div>
+      </div>
+
+      <div class="info-card">
+        <h3>🔋 バッテリー</h3>
+        <div class="info-row"><span class="info-label">残量</span><span class="info-val" id="dev-battery-level">--</span></div>
+        <div class="info-row"><span class="info-label">充電状態</span><span class="info-val" id="dev-battery-charging">--</span></div>
+        <div class="info-row"><span class="info-label">残り使用時間</span><span class="info-val" id="dev-battery-discharge">--</span></div>
+        <div class="info-row"><span class="info-label">充電完了まで</span><span class="info-val" id="dev-battery-charge">--</span></div>
+        <div class="battery-bar-wrap"><div class="battery-bar" id="battery-bar"></div></div>
+      </div>
+
+      <div class="info-card">
+        <h3>💾 メモリ・パフォーマンス</h3>
+        <div class="info-row"><span class="info-label">JSヒープ (使用中)</span><span class="info-val" id="dev-heap-used">--</span></div>
+        <div class="info-row"><span class="info-label">JSヒープ (合計)</span><span class="info-val" id="dev-heap-total">--</span></div>
+        <div class="info-row"><span class="info-label">JSヒープ上限</span><span class="info-val" id="dev-heap-limit">--</span></div>
+        <div class="info-row"><span class="info-label">ページ読込時間</span><span class="info-val" id="dev-load-time">--</span></div>
+        <div class="info-row"><span class="info-label">DNS解決時間</span><span class="info-val" id="dev-dns-time">--</span></div>
+        <div class="info-row"><span class="info-label">TTFB</span><span class="info-val" id="dev-ttfb">--</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECURITY ========== -->
+  <section id="tab-security" class="tab-content" data-title="セキュリティ分析">
+    <div class="section-header">
+      <h2>セキュリティ分析</h2>
+      <button class="btn btn-primary" id="run-security">🔍 分析実行</button>
+    </div>
+
+    <div class="security-score-wrap">
+      <div class="score-circle" id="security-score-circle">
+        <span id="security-score-val">--</span>
+      </div>
+      <div class="score-label" id="security-score-label">セキュリティスコア</div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>接続セキュリティ</h3>
+        <div class="security-item" id="sec-https">
+          <span class="sec-icon"></span><span class="sec-label">HTTPS接続</span><span class="sec-status">確認中</span>
+        </div>
+        <div class="security-item" id="sec-cert">
+          <span class="sec-icon"></span><span class="sec-label">SSL証明書</span><span class="sec-status">確認中</span>
+        </div>
+        <div class="security-item" id="sec-mixed">
+          <span class="sec-icon"></span><span class="sec-label">混在コンテンツ</span><span class="sec-status">確認中</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>プライバシー</h3>
+        <div class="security-item" id="sec-vpn">
+          <span class="sec-icon"></span><span class="sec-label">VPN検出</span><span class="sec-status">確認中</span>
+        </div>
+        <div class="security-item" id="sec-webrtc">
+          <span class="sec-icon"></span><span class="sec-label">WebRTC IPリーク</span><span class="sec-status">確認中</span>
+        </div>
+        <div class="security-item" id="sec-proxy">
+          <span class="sec-icon"></span><span class="sec-label">プロキシ検出</span><span class="sec-status">確認中</span>
+        </div>
+        <div class="security-item" id="sec-mobile">
+          <span class="sec-icon"></span><span class="sec-label">モバイル回線</span><span class="sec-status">確認中</span>
+        </div>
+      </div>
+
+      <div class="info-card full-width">
+        <h3>⚠️ リスク一覧</h3>
+        <div id="security-risks"><p class="muted">「分析実行」を押してください</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SITES ========== -->
+  <section id="tab-sites" class="tab-content" data-title="主要サイト読み込み評価">
+    <div class="section-header">
+      <h2>主要サイト 読み込み評価</h2>
+      <button class="btn btn-primary" id="run-sites">▶ テスト開始</button>
+    </div>
+    <p class="note">⚠️ ファビコン取得による応答時間測定です。CORS制限・キャッシュにより結果が変わる場合があります。</p>
+    <div id="sites-list" class="sites-list"><p class="muted">「テスト開始」を押してください</p></div>
+    <div id="sites-summary" class="sites-summary" style="display:none"></div>
+  </section>
+
+  <!-- ========== DIAGNOSTICS ========== -->
+  <section id="tab-diagnostics" class="tab-content" data-title="診断・自動改善">
+    <div class="section-header">
+      <h2>診断・自動改善</h2>
+      <button class="btn btn-primary" id="run-diagnostics">🔍 診断開始</button>
+    </div>
+
+    <div id="diag-status" class="diag-status">
+      <p>「診断開始」ボタンを押してインターネット環境の診断を開始してください。</p>
+    </div>
+
+    <div id="diag-results" class="diag-results"></div>
+
+    <div id="diag-suggestions" class="diag-suggestions" style="display:none">
+      <h3>💡 改善提案</h3>
+      <div id="suggestions-list"></div>
+    </div>
+
+    <div class="export-bar" style="margin-top:20px">
+      <h3>問題レポートのエクスポート</h3>
+      <button class="btn btn-warning" id="export-report-json">📁 問題レポート (JSON)</button>
+      <button class="btn btn-warning" id="export-report-pdf">📄 問題レポート (PDF)</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>InternetTool v1.0 &nbsp;|&nbsp; GitHub Pages &nbsp;|&nbsp; オフライン対応 (PWA)</p>
+  <p id="last-update" class="muted">最終更新: --</p>
+  <p class="muted" style="margin-top:6px;font-size:11px">
+    ⚠️ SSID・Wi-Fiパスワード・MACアドレス・ルーター詳細はブラウザのセキュリティポリシーにより取得できません。
+    取得可能な範囲の情報を表示しています。
+  </p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
